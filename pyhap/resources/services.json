@@ -60,6 +60,18 @@
       ],
       "UUID": "00000096-0000-1000-8000-0026BB765291"
    },
+   "BridgingState": {
+      "OptionalCharacteristics": [
+         "Name"
+      ],
+      "RequiredCharacteristics": [
+         "Reachable",
+         "LinkQuality",
+         "AccessoryIdentifier",
+         "Category"
+      ],
+      "UUID": "00000062-0000-1000-8000-0026BB765291"
+   },
    "CameraRTPStreamManagement": {
       "OptionalCharacteristics": [
          "Name"
