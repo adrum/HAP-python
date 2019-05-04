@@ -10,6 +10,13 @@
          "0": "Requires Additional Setup"
       }
    },
+   "AccessoryIdentifier": {
+      "Format": "string",
+      "Permissions": [
+         "pr"
+      ],
+      "UUID": "00000057-0000-1000-8000-0026BB765291"
+   },
    "Active": {
       "Format": "uint8",
       "Permissions": [
@@ -177,6 +184,17 @@
       "UUID": "00000091-0000-1000-8000-0026BB765291",
       "maxValue": 100,
       "minValue": 0
+   },
+   "Category": {
+      "Format": "uint16",
+      "Permissions": [
+         "pr",
+         "ev"
+      ],
+      "UUID": "000000A3-0000-1000-8000-0026BB765291",
+      "maxValue": 16,
+      "minStep": 1,
+      "minValue": 1
    },
    "ChargingState": {
       "Format": "uint8",
@@ -654,6 +672,17 @@
          "LeakNotDetected": 0
       }
    },
+   "LinkQuality": {
+      "Format": "uint8",
+      "Permissions": [
+         "pr",
+         "ev"
+      ],
+      "maxValue": 4,
+      "minStep": 1,
+      "minValue": 0,
+      "UUID": "0000009C-0000-1000-8000-0026BB765291"
+   },
    "LockControlPoint": {
       "Format": "tlv8",
       "Permissions": [
@@ -976,6 +1005,14 @@
          "LongPress": 2,
          "SinglePress": 0
       }
+   },
+   "Reachable": {
+      "Format": "bool",
+      "Permissions": [
+         "pr",
+         "ev"
+      ],
+      "UUID": "00000063-0000-1000-8000-0026BB765291"
    },
    "RelativeHumidityDehumidifierThreshold": {
       "Format": "float",

@@ -53,6 +53,7 @@ class Accessory:
         self.iid_manager = IIDManager()
 
         self.add_info_service()
+        self.add_bridging_state_service()
         self._set_services()
 
     def __repr__(self):
@@ -92,6 +93,17 @@ class Accessory:
         serv_info.configure_char('Name', value=self.display_name)
         serv_info.configure_char('SerialNumber', value='default')
         self.add_service(serv_info)
+
+    def add_bridging_state_service(self):
+        """Helper method to add the required `BridgingState` service."""
+        serv_bridge = self.add_preload_service(
+            'BridgingState', chars=['Name', 'LinkQuality'])
+
+        serv_bridge.configure_char('Name', value=self.display_name+' Bridged')
+        serv_bridge.configure_char('AccessoryIdentifier', value=self.aid)
+        serv_bridge.configure_char('LinkQuality', value=1)
+        serv_bridge.configure_char('Reachable', value=self.reachable)
+        serv_bridge.configure_char('Category', value=0)
 
     def set_info_service(self, firmware_revision=None, manufacturer=None,
                          model=None, serial_number=None):
