@@ -78,10 +78,22 @@ class Accessory:
 
     def updateReachability(self, reachable):
         self.reachable = reachable
-        for serv in self.services:
-            for char in serv.characteristics:
-                char.status = HAP_SERVER_STATUS.SUCCESS if reachable else \
-                    HAP_SERVER_STATUS.SERVICE_COMMUNICATION_FAILURE
+        if reachable:
+            for serv in self.services:
+                for char in serv.characteristics:
+                    char.status = HAP_SERVER_STATUS.SUCCESS if reachable else \
+                        HAP_SERVER_STATUS.SERVICE_COMMUNICATION_FAILURE
+
+        bridging_state = self.get_service('BridgingState')
+        bridging_state.get_characteristic('Reachable').set_value(reachable)
+        bridging_state.get_characteristic('LinkQuality').set_value(
+            1 if reachable else 0)
+
+        if not reachable:
+            for serv in self.services:
+                for char in serv.characteristics:
+                    char.status = HAP_SERVER_STATUS.SUCCESS if reachable else \
+                        HAP_SERVER_STATUS.SERVICE_COMMUNICATION_FAILURE
 
     def add_info_service(self):
         """Helper method to add the required `AccessoryInformation` service.
@@ -103,7 +115,7 @@ class Accessory:
         serv_bridge.configure_char('AccessoryIdentifier', value=self.aid)
         serv_bridge.configure_char('LinkQuality', value=1)
         serv_bridge.configure_char('Reachable', value=self.reachable)
-        serv_bridge.configure_char('Category', value=0)
+        serv_bridge.configure_char('Category', value=self.category)
 
     def set_info_service(self, firmware_revision=None, manufacturer=None,
                          model=None, serial_number=None):
