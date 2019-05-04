@@ -10,7 +10,10 @@ from uuid import UUID
 
 from pyhap.const import (
     HAP_PERMISSION_READ, HAP_REPR_DESC, HAP_REPR_FORMAT, HAP_REPR_IID,
-    HAP_REPR_MAX_LEN, HAP_REPR_PERM, HAP_REPR_TYPE, HAP_REPR_VALUE)
+    HAP_REPR_MAX_LEN, HAP_REPR_PERM, HAP_REPR_TYPE, HAP_REPR_STATUS,
+    HAP_REPR_VALUE)
+
+from .hap_server import HAP_SERVER_STATUS
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +82,7 @@ class Characteristic:
     """
 
     __slots__ = ('broker', 'display_name', 'properties', 'type_id',
-                 'value', 'getter_callback', 'setter_callback')
+                 'value', 'status', 'getter_callback', 'setter_callback')
 
     def __init__(self, display_name, type_id, properties):
         """Initialise with the given properties.
@@ -100,6 +103,7 @@ class Characteristic:
         self.properties = properties
         self.type_id = type_id
         self.value = self._get_default_value()
+        self.status = HAP_SERVER_STATUS.SUCCESS
         self.getter_callback = None
         self.setter_callback = None
 
@@ -218,7 +222,7 @@ class Characteristic:
         .. seealso:: accessory.publish
         .. seealso:: accessory_driver.publish
         """
-        self.broker.publish(self.value, self)
+        self.broker.publish(self.value, self.status, self)
 
     # pylint: disable=invalid-name
     def to_HAP(self):
@@ -236,6 +240,9 @@ class Characteristic:
             HAP_REPR_PERM: self.properties[PROP_PERMISSIONS],
             HAP_REPR_FORMAT: self.properties[PROP_FORMAT],
         }
+
+        if self.status != HAP_SERVER_STATUS.SUCCESS:
+            hap_rep[HAP_REPR_STATUS] = self.status
 
         value = self.get_value()
         if self.properties[PROP_FORMAT] in HAP_FORMAT_NUMERICS:

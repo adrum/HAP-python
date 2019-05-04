@@ -143,12 +143,13 @@ def test_notify():
     char = get_char(PROPERTIES.copy())
 
     char.value = 2
+    char.status = 0
     with pytest.raises(AttributeError):
         char.notify()
 
     with patch.object(char, 'broker') as mock_broker:
         char.notify()
-    mock_broker.publish.assert_called_with(2, char)
+    mock_broker.publish.assert_called_with(2, 0, char)
 
 
 def test_to_HAP_numberic():

@@ -6,8 +6,9 @@ import struct
 from pyhap import util, SUPPORT_QR_CODE
 from pyhap.const import (
     STANDALONE_AID, HAP_REPR_AID, HAP_REPR_IID, HAP_REPR_SERVICES,
-    HAP_REPR_VALUE, CATEGORY_OTHER, CATEGORY_BRIDGE)
+    HAP_REPR_STATUS, HAP_REPR_VALUE, CATEGORY_OTHER, CATEGORY_BRIDGE)
 from pyhap.iid_manager import IIDManager
+from .hap_server import HAP_SERVER_STATUS
 
 if SUPPORT_QR_CODE:
     import base36
@@ -73,6 +74,13 @@ class Accessory:
            Initialize the service inside the accessory `init` method instead.
         """
         pass
+
+    def updateReachability(self, reachable):
+        self.reachable = reachable
+        for serv in self.services:
+            for char in serv.characteristics:
+                char.status = HAP_SERVER_STATUS.SUCCESS if reachable else \
+                    HAP_SERVER_STATUS.SERVICE_COMMUNICATION_FAILURE
 
     def add_info_service(self):
         """Helper method to add the required `AccessoryInformation` service.
@@ -294,7 +302,7 @@ class Accessory:
 
     # Driver
 
-    def publish(self, value, sender):
+    def publish(self, value, status, sender):
         """Append AID and IID of the sender and forward it to the driver.
 
         Characteristics call this method to send updates.
@@ -308,8 +316,12 @@ class Accessory:
         acc_data = {
             HAP_REPR_AID: self.aid,
             HAP_REPR_IID: self.iid_manager.get_iid(sender),
-            HAP_REPR_VALUE: value,
+            HAP_REPR_STATUS: status
         }
+
+        if status == HAP_SERVER_STATUS.SUCCESS:
+            acc_data[HAP_REPR_VALUE] = value
+
         self.driver.publish(acc_data)
 
 

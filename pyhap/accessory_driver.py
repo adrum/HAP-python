@@ -49,10 +49,9 @@ from pyhap.loader import Loader
 from pyhap.params import get_srp_context
 from pyhap.state import State
 
-logger = logging.getLogger(__name__)
+from .hap_server import HAP_SERVER_STATUS
 
-CHAR_STAT_OK = 0
-SERVICE_COMMUNICATION_FAILURE = -70402
+logger = logging.getLogger(__name__)
 
 
 def callback(func):
@@ -579,11 +578,13 @@ class AccessoryDriver:
             rep = {HAP_REPR_AID: aid, HAP_REPR_IID: iid}
             char = self.accessory.get_characteristic(aid, iid)
             try:
-                rep[HAP_REPR_VALUE] = char.get_value()
-                rep[HAP_REPR_STATUS] = CHAR_STAT_OK
+                rep[HAP_REPR_STATUS] = char.status
+                if char.status == HAP_SERVER_STATUS.SUCCESS:
+                    rep[HAP_REPR_VALUE] = char.get_value()
             except CharacteristicError:
                 logger.error("Error getting value for characteristic %s.", id)
-                rep[HAP_REPR_STATUS] = SERVICE_COMMUNICATION_FAILURE
+                rep[HAP_REPR_STATUS] = HAP_SERVER_STATUS.\
+                    SERVICE_COMMUNICATION_FAILURE
 
             chars.append(rep)
         logger.debug("Get chars response: %s", chars)
